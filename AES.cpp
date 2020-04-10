@@ -12,7 +12,7 @@ bool AES::setKey(const unsigned char* keyArray)
 {	
 	// Assuming we add 00 to the beginning of keyArray in cipher.cpp
 
-	cout << strlen((char*)keyArray) << endl;
+	cout << strlen((char *)keyArray) << endl;
 	
 	// if keyArray's size is 17 proceed
 	if(strlen((char *)keyArray)!=17)
