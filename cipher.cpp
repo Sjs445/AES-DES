@@ -8,18 +8,18 @@
 using namespace std;
 
 // Reads the file and returns a string containing contents
-// string read(string file) {
-// 	ifstream infile(file);
-// 	string contents;
-// 	char character;
+string read(string file) {
+	ifstream infile(file.c_str());
+	string contents;
+	char character;
 
-// 	if(infile.is_open()) {
-// 		while(infile >> character) {
-// 			contents = contents + character;
-// 		}
-// 	}
-// 	return contents;
-// }
+	if(infile.is_open()) {
+		while(infile >> character) {
+			contents = contents + character;
+		}
+	}
+	return contents;
+}
 
 void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
 	cipher->setKey((unsigned char*)key.c_str());
@@ -30,7 +30,11 @@ void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFi
 }
 
 void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile){
-
+	cipher->setKey((unsigned char*)ley.c_str());
+	if(enc_dec == "ENC")	{
+		unsigned char* ciphertext = cipher->encrypt(read(inFile));
+		cout << ciphertext << endl;
+	}
 }
 
 int main(int argc, char** argv)
