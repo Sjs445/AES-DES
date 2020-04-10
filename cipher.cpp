@@ -1,10 +1,33 @@
 #include <string>
+#include <iostream>
+#include <fstream>
 #include "CipherInterface.h"
 #include "DES.h"
 #include "AES.h"
 
 using namespace std;
 
+// Reads the file and returns a string containing contents
+string read(string file) {
+	ifstream infile(file);
+	string contents;
+	char character;
+
+	if(infile.is_open()) {
+		while(infile >> character) {
+			contents = contents + character;
+		}
+	}
+	return contents;
+}
+
+void DES(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
+	cipher->setKey((unsigned char*)key.c_str());
+	if(enc_dec == "ENC") {
+		//unsigned char* ciphertext = cipher->encrypt(read(inFile));
+
+	}
+}
 int main(int argc, char** argv)
 {
 	/**
@@ -16,11 +39,23 @@ int main(int argc, char** argv)
 	 * misbehave.
 	 */
 	
-	
-	
+
+	//Example run command:
+	//cipher AES "00112233445566778899aabbccddeeff" ENC in.txt out.txt
+
+	// Map the arguments to strings
+	string cipherType = argv[1];
+	string key = argv[2];
+	string enc_dec = argv[3];
+	string inFile = argv[4];
+	string outFile = argv[5];
+
+	if(cipherType == "DES") {
+		CipherInterface* cipher = new DES();
+		DES(cipher, key, enc_dec, inFile, outFile);
+	}
 	/* Create an instance of the DES cipher */	
 	CipherInterface* cipher = NULL; 
-		
 	/* Error checks */
 	if(!cipher)
 	{
