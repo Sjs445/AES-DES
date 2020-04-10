@@ -1,5 +1,9 @@
 #include "DES.h"
 #include <openssl/des.h>
+
+#define ENC 1
+#define DEC 0
+
 /**
  * Sets the key to use
  * @param key - the key to use
@@ -113,7 +117,7 @@ unsigned char* DES::decrypt(const unsigned char* ciphertext)
 	//LOGIC:
 	// Same logic as encrypt(), except in step 4. decrypt instead of encrypting
 	DES_LONG block[2];
-	unsigned char ciphertext[8];
+	unsigned char plaintext[8];
 
 	block[0] = ctol((unsigned char*)ciphertext);
 	block[1] = ctol((unsigned char*)ciphertext + 4);

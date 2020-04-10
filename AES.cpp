@@ -1,4 +1,5 @@
 #include "AES.h"
+
 /**
  * Sets the key to use
  * @param key - the first byte of this represents whether
@@ -10,6 +11,8 @@
 bool AES::setKey(const unsigned char* keyArray)
 {	
 	// Assuming we add 00 to the beginning of keyArray in cipher.cpp
+
+	cout << strlen((char*)keyArray) << endl;
 	
 	// if keyArray's size is 17 proceed
 	if(strlen((char *)keyArray)!=17)
@@ -74,7 +77,7 @@ bool AES::setKey(const unsigned char* keyArray)
 
 	// Pass over key values
 	for(int i = 0; i < 16; i++)	{
-		key[i] = keyArray[i + 1];
+		newKey[i] = keyArray[i + 1];
 	}
 
 	// Assign return value for SetKey()
@@ -82,14 +85,14 @@ bool AES::setKey(const unsigned char* keyArray)
 
 	// Check if the key has passed or failed and return the result
 	if (type == '0')	{
-		if(AES_set_encrypt_key(newKey, 128, &encKey) != 0)	{
+		if(AES_set_encrypt_key(newKey, 128, &this->enc_key) != 0)	{
 			cerr << "AES_set_encrypt_key() has failed!\n" << endl;
 			returnValue = false;
 		}
 	}
 	else
 	{
-		if(AES_set_decrypt_key(newKey, 128, &decKey) != 0)	{
+		if(AES_set_decrypt_key(newKey, 128, &this->dec_key) != 0)	{
 			cerr << "AES_set_decrypt_key() has failed!\n" << endl;
 			returnValue = false;
 		}

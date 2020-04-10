@@ -30,9 +30,9 @@ void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFi
 }
 
 void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile){
-	cipher->setKey((unsigned char*)ley.c_str());
+	cipher->setKey((unsigned char*)key.c_str());
 	if(enc_dec == "ENC")	{
-		unsigned char* ciphertext = cipher->encrypt(read(inFile));
+		unsigned char* ciphertext = cipher->encrypt((unsigned char*)read(inFile).c_str());
 		cout << ciphertext << endl;
 	}
 }
@@ -66,7 +66,6 @@ int main(int argc, char** argv)
 	else if(cipherType == "AES"){
 		CipherInterface* cipher = new AES();
 		AES_Cipher(cipher, key, enc_dec, inFile, outFile);
-
 	}
 	/* Create an instance of the DES cipher */	
 	CipherInterface* cipher = NULL; 
@@ -84,7 +83,7 @@ int main(int argc, char** argv)
 	 * Your program should take input from
 	 * command line.
 	 */
-	cipher->setKey((unsigned char*)"0123456789abcdef");
+	// cipher->setKey((unsigned char*)"0123456789abcdef");
 	
 	/* Perform encryption */
 	//string cipherText = cipher->encrypt("hello world");
