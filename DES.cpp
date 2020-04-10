@@ -1,9 +1,10 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "DES.h"
 #include <openssl/des.h>
 
 #define ENC 1
 #define DEC 0
-
 /**
  * Sets the key to use
  * @param key - the key to use
