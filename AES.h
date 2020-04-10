@@ -44,13 +44,20 @@ class AES: public CipherInterface
 		 * @return - the plaintext
 		 */
 		virtual unsigned char* decrypt(const unsigned char* cipherText);
-	
+
+
 			
 	/* The protected members */
 	protected:
+		AES_KEY enc_key, dec_key;
 
-		//TODO: declare the AES key
-		AES_KEY encKey, decKey;
+		/**
+		 * Converts two characters into a hex integers
+		 * and then inserts the integers into the higher
+		 * and lower bits of the byte
+		 */
+		unsigned char twoCharToHexByte(const unsigned char* twoChars);
+		unsigned char charToHex(const char& character);
 };
 
 
