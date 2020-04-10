@@ -8,26 +8,31 @@
 using namespace std;
 
 // Reads the file and returns a string containing contents
-string read(string file) {
-	ifstream infile(file);
-	string contents;
-	char character;
+// string read(string file) {
+// 	ifstream infile(file);
+// 	string contents;
+// 	char character;
 
-	if(infile.is_open()) {
-		while(infile >> character) {
-			contents = contents + character;
-		}
-	}
-	return contents;
-}
+// 	if(infile.is_open()) {
+// 		while(infile >> character) {
+// 			contents = contents + character;
+// 		}
+// 	}
+// 	return contents;
+// }
 
-void DES(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
+void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
 	cipher->setKey((unsigned char*)key.c_str());
 	if(enc_dec == "ENC") {
 		//unsigned char* ciphertext = cipher->encrypt(read(inFile));
 
 	}
 }
+
+void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile){
+
+}
+
 int main(int argc, char** argv)
 {
 	/**
@@ -52,7 +57,12 @@ int main(int argc, char** argv)
 
 	if(cipherType == "DES") {
 		CipherInterface* cipher = new DES();
-		DES(cipher, key, enc_dec, inFile, outFile);
+		DES_Cipher(cipher, key, enc_dec, inFile, outFile);
+	}
+	else if(cipherType == "AES"){
+		CipherInterface* cipher = new AES();
+		AES_Cipher(cipher, key, enc_dec, inFile, outFile);
+
 	}
 	/* Create an instance of the DES cipher */	
 	CipherInterface* cipher = NULL; 
