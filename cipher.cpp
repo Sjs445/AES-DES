@@ -30,11 +30,18 @@ void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFi
 }
 
 void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile){
-	cipher->setKey((unsigned char*)key.c_str());
 	if(enc_dec == "ENC")	{
+		string paddedKey = "0"+key;
+		cipher->setKey((unsigned char*)paddedKey.c_str());
 		unsigned char* ciphertext = cipher->encrypt((unsigned char*)read(inFile).c_str());
 		cout << ciphertext << endl;
 	}
+	else{
+		string paddedKey = "1"+key;
+		cipher->setKey((unsigned char*)paddedKey.c_str());
+		unsigned char* ciphertext = cipher->encrypt((unsigned char *)read(inFile).c_str());
+		cout << ciphertext << endl;
+}
 }
 
 int main(int argc, char** argv)
@@ -58,7 +65,6 @@ int main(int argc, char** argv)
 	string enc_dec = argv[3];
 	string inFile = argv[4];
 	string outFile = argv[5];
-
 	if(cipherType == "DES") {
 		CipherInterface* cipher = new DES();
 		DES_Cipher(cipher, key, enc_dec, inFile, outFile);
@@ -72,6 +78,7 @@ int main(int argc, char** argv)
 	/* Error checks */
 	if(!cipher)
 	{
+
 		fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
 		__FILE__, __FUNCTION__, __LINE__);
 		exit(-1);

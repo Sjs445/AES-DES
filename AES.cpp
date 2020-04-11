@@ -9,34 +9,37 @@
  * @return - True if the key is valid and False otherwise
  */
 bool AES::setKey(const unsigned char* keyArray)
-{	
-	// Assuming we add 00 to the beginning of keyArray in cipher.cpp
+{
+	// Whether we are doing encryption/decryption
+	char type = keyArray[0];	
 
-	cout << strlen((char *)keyArray) << endl;
+	// The index of the key
+	int keyIndex = 0;
 	
-	// if keyArray's size is 17 proceed
-	if(strlen((char *)keyArray)!=17)
+	// if keyArray's size is 34 proceed
+	if(strlen((char *)keyArray)!=33)
 	{
 		fprintf(stderr, "Key should be 128 bits!\n");
 		return false;
 	}
 
-	unsigned char * hexArray=(unsigned char *)keyArray;
+	//	Create new char array for twoCharToHexByte conversion
+	unsigned char hexArray [16];
 
 	// convert keyArray to the hex array
-	for (int i = 0; i < 17; i+=2)
+	for (int i = 1; i < 32; i+=2)
 	{
-		hexArray[i]=twoCharToHexByte((unsigned char *)keyArray[i]);
+		hexArray[keyIndex] = twoCharToHexByte((unsigned char *)keyArray + i);
+
+		// Go to the index key index
+		++keyIndex;
 	}
 
-	// Removing the first byte 
-	unsigned char * originalKey;
-	strncpy((char *)originalKey, (char*)keyArray+1, 16);
-
-	if(keyArray[0]==0x00)
+	
+	if(keyArray[0]=='0')
 	{
 		// Set the encryption key	
-		if(AES_set_encrypt_key(originalKey, 128, &enc_key)!=0)
+		if(AES_set_encrypt_key(hexArray, 128, &enc_key)!=0)
 		{
 			fprintf(stderr, "AES_set_encrypt_key() failed!\n");
 			return false;
@@ -46,7 +49,7 @@ bool AES::setKey(const unsigned char* keyArray)
 	else	// Otherwise we use set_decrypt_key
 	{
 		//	Set the decryption key
-		if(AES_set_decrypt_key(originalKey, 128, &dec_key)!=0)
+		if(AES_set_decrypt_key(hexArray, 128, &dec_key)!=0)
 		{
 			fprintf(stderr, "AES_SET_decrypt_key() failed!\n");
 			return false;
@@ -69,39 +72,39 @@ bool AES::setKey(const unsigned char* keyArray)
 	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
 	// and aes.cpp example provided with the assignment.
 
-	// Check the type of key being passed in
-	char type = keyArray[0];
+	// // Check the type of key being passed in
+	// char type = keyArray[0];
 
-	// Create a temp key variable to ensure original key isnt altered
-	unsigned char *newKey = new unsigned char[16];
+	// // Create a temp key variable to ensure original key isnt altered
+	// unsigned char *newKey = new unsigned char[16];
 
-	// Pass over key values
-	for(int i = 0; i < 16; i++)	{
-		newKey[i] = keyArray[i + 1];
-	}
+	// // Pass over key values
+	// for(int i = 0; i < 16; i++)	{
+	// 	newKey[i] = keyArray[i + 1];
+	// }
 
-	// Assign return value for SetKey()
-	bool returnValue =  true;
+	// // Assign return value for SetKey()
+	// bool returnValue =  true;
 
-	// Check if the key has passed or failed and return the result
-	if (type == '0')	{
-		if(AES_set_encrypt_key(newKey, 128, &this->enc_key) != 0)	{
-			cerr << "AES_set_encrypt_key() has failed!\n" << endl;
-			returnValue = false;
-		}
-	}
-	else
-	{
-		if(AES_set_decrypt_key(newKey, 128, &this->dec_key) != 0)	{
-			cerr << "AES_set_decrypt_key() has failed!\n" << endl;
-			returnValue = false;
-		}
-	}
+	// // Check if the key has passed or failed and return the result
+	// if (type == '0')	{
+	// 	if(AES_set_encrypt_key(newKey, 128, &this->enc_key) != 0)	{
+	// 		cerr << "AES_set_encrypt_key() has failed!\n" << endl;
+	// 		returnValue = false;
+	// 	}
+	// }
+	// else
+	// {
+	// 	if(AES_set_decrypt_key(newKey, 128, &this->dec_key) != 0)	{
+	// 		cerr << "AES_set_decrypt_key() has failed!\n" << endl;
+	// 		returnValue = false;
+	// 	}
+	// }
 	
 	
 	
 	
-	return returnValue;
+	// return returnValue;
 	
 }
 
