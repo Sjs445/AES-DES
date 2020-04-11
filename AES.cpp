@@ -58,55 +58,6 @@ bool AES::setKey(const unsigned char* keyArray)
 		}
 			return true;
 	}
-		
-	// TODO: AES implementation of openssl cares about whether
-	// you are encrypting or decrypting when setting the key.
-	// That is, when encrypting you use function AES_set_encrypt_key(...)
-	// and when decrypting AES_set_decrypt_key(...).
-	//
-	// One way to solve this problem is to pass in a 17 byte key, where
-	// the first byte is used to indicate whether we are encrypting or
-	// decrypting. E.g., if the first byte is 0, then use AES_set_encrypt_key(...).
-	// Otherwise, use AES_set_decrypt_key(...).  The rest of the bytes in the
-	// array indicate the 16 bytes of the 128-bit AES key.
-	//
-	// Both functions return 0 on success and other values on faliure.
-	// For documentation, please see https://boringssl.googlesource.com/boringssl/+/2623/include/openssl/aes.h
-	// and aes.cpp example provided with the assignment.
-
-	// // Check the type of key being passed in
-	// char type = keyArray[0];
-
-	// // Create a temp key variable to ensure original key isnt altered
-	// unsigned char *newKey = new unsigned char[16];
-
-	// // Pass over key values
-	// for(int i = 0; i < 16; i++)	{
-	// 	newKey[i] = keyArray[i + 1];
-	// }
-
-	// // Assign return value for SetKey()
-	// bool returnValue =  true;
-
-	// // Check if the key has passed or failed and return the result
-	// if (type == '0')	{
-	// 	if(AES_set_encrypt_key(newKey, 128, &this->enc_key) != 0)	{
-	// 		cerr << "AES_set_encrypt_key() has failed!\n" << endl;
-	// 		returnValue = false;
-	// 	}
-	// }
-	// else
-	// {
-	// 	if(AES_set_decrypt_key(newKey, 128, &this->dec_key) != 0)	{
-	// 		cerr << "AES_set_decrypt_key() has failed!\n" << endl;
-	// 		returnValue = false;
-	// 	}
-	// }
-	
-	
-	
-	
-	// return returnValue;
 	
 }
 
