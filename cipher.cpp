@@ -18,7 +18,21 @@ string read(string file) {
 			contents = contents + character;
 		}
 	}
+	infile.close();
 	return contents;
+}
+
+void write(string file, unsigned char * outputText){
+	ofstream outfile(file.c_str(), ios::app);
+
+	if(outfile.is_open()){
+		outfile << outputText;
+		return;
+	}
+	else{
+		cout<< "Error opening file!"<<endl;
+		return;
+	}
 }
 
 void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
@@ -34,14 +48,19 @@ void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFi
 		string paddedKey = "0"+key;
 		cipher->setKey((unsigned char*)paddedKey.c_str());
 		unsigned char* ciphertext = cipher->encrypt((unsigned char*)read(inFile).c_str());
-		cout << ciphertext << endl;
+		write(outFile, ciphertext);
 	}
-	else{
+	else if(enc_dec == "DEC")	{
 		string paddedKey = "1"+key;
 		cipher->setKey((unsigned char*)paddedKey.c_str());
-		unsigned char* ciphertext = cipher->encrypt((unsigned char *)read(inFile).c_str());
-		cout << ciphertext << endl;
-}
+		unsigned char* plaintext = cipher->decrypt((unsigned char *)read(inFile).c_str());
+		write(outFile, plaintext);
+	}
+	else
+	{
+		cout<<"You need to enter ENC or DEC."<<endl;
+	}
+	
 }
 
 int main(int argc, char** argv)
