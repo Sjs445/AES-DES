@@ -29,15 +29,16 @@ bool AES::setKey(const unsigned char* keyArray)
 	// convert keyArray to the hex array
 	for (int i = 1; i < 32; i+=2)
 	{
+		
 		hexArray[keyIndex] = twoCharToHexByte((unsigned char *)keyArray + i);
 
 		// Go to the index key index
 		++keyIndex;
 	}
-
 	
 	if(keyArray[0]=='0')
 	{
+		cerr << "Setting encryption key!" << endl;
 		// Set the encryption key	
 		if(AES_set_encrypt_key(hexArray, 128, &enc_key)!=0)
 		{
@@ -48,13 +49,14 @@ bool AES::setKey(const unsigned char* keyArray)
 	}
 	else	// Otherwise we use set_decrypt_key
 	{
+		cerr << "Setting decryption key!" << endl;
 		//	Set the decryption key
 		if(AES_set_decrypt_key(hexArray, 128, &dec_key)!=0)
 		{
 			fprintf(stderr, "AES_SET_decrypt_key() failed!\n");
 			return false;
 		}
-		return true;
+			return true;
 	}
 		
 	// TODO: AES implementation of openssl cares about whether

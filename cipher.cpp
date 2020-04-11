@@ -1,39 +1,13 @@
 #include <string>
 #include <iostream>
-#include <fstream>
+#include <stdio.h>
 #include "CipherInterface.h"
 #include "DES.h"
 #include "AES.h"
 
 using namespace std;
 
-// Reads the file and returns a string containing contents
-string read(string file) {
-	ifstream infile(file.c_str());
-	string contents;
-	char character;
 
-	if(infile.is_open()) {
-		while(infile >> character) {
-			contents = contents + character;
-		}
-	}
-	infile.close();
-	return contents;
-}
-
-void write(string file, unsigned char * outputText){
-	ofstream outfile(file.c_str(), ios::app);
-
-	if(outfile.is_open()){
-		outfile << outputText;
-		return;
-	}
-	else{
-		cout<< "Error opening file!"<<endl;
-		return;
-	}
-}
 
 void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile) {
 	cipher->setKey((unsigned char*)key.c_str());
@@ -43,25 +17,6 @@ void DES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFi
 	}
 }
 
-void AES_Cipher(CipherInterface *cipher, string key, string enc_dec, string inFile, string outFile){
-	if(enc_dec == "ENC")	{
-		string paddedKey = "0"+key;
-		cipher->setKey((unsigned char*)paddedKey.c_str());
-		unsigned char* ciphertext = cipher->encrypt((unsigned char*)read(inFile).c_str());
-		write(outFile, ciphertext);
-	}
-	else if(enc_dec == "DEC")	{
-		string paddedKey = "1"+key;
-		cipher->setKey((unsigned char*)paddedKey.c_str());
-		unsigned char* plaintext = cipher->decrypt((unsigned char *)read(inFile).c_str());
-		write(outFile, plaintext);
-	}
-	else
-	{
-		cout<<"You need to enter ENC or DEC."<<endl;
-	}
-	
-}
 
 int main(int argc, char** argv)
 {
@@ -84,16 +39,38 @@ int main(int argc, char** argv)
 	string enc_dec = argv[3];
 	string inFile = argv[4];
 	string outFile = argv[5];
-	if(cipherType == "DES") {
-		CipherInterface* cipher = new DES();
-		DES_Cipher(cipher, key, enc_dec, inFile, outFile);
-	}
-	else if(cipherType == "AES"){
-		CipherInterface* cipher = new AES();
-		AES_Cipher(cipher, key, enc_dec, inFile, outFile);
-	}
+	
+	// The block size
+	int blockSize = -1;
+		
 	/* Create an instance of the DES cipher */	
 	CipherInterface* cipher = NULL; 
+	
+	if(cipherType == "DES") {
+		cipher = new DES();
+		blockSize = 8;
+		cipher->setKey((unsigned char *)key.c_str());
+	}
+	else if(cipherType == "AES"){
+		cipher = new AES();
+		blockSize = 16;
+		string prePendKey; 
+		if(enc_dec == "ENC")
+		{
+			prePendKey = "0"+key;
+			cipher->setKey((unsigned char *)prePendKey.c_str());
+		}
+		else if(enc_dec == "DEC")
+		{
+			prePendKey = "1"+key;
+			cipher->setKey((unsigned char *)prePendKey.c_str());
+		}
+		else
+		{
+			cout<<"You need to enter ENC or DEC."<<endl;
+		}
+	}
+	
 	/* Error checks */
 	if(!cipher)
 	{
@@ -101,8 +78,89 @@ int main(int argc, char** argv)
 		fprintf(stderr, "ERROR [%s %s %d]: could not allocate memory\n",	
 		__FILE__, __FUNCTION__, __LINE__);
 		exit(-1);
+	}	
+
+	// A single block	
+	unsigned char block[blockSize];
+
+	// Open the input the file 
+	FILE* inputFilePtr = fopen(inFile.c_str(), "rb");
+	
+	// Open the output file
+	FILE* outputFilePtr = fopen(outFile.c_str(), "wb");
+	
+	// Sanity check for the input file
+	if(!inputFilePtr)
+	{
+		perror("fopen() error on input");
+		exit(-1);
+	}
+
+	// Sanity check for the output
+	if(!outputFilePtr)
+	{
+		perror("fopen() error on output");
+		exit(-1);
 	}
 	
+	int bytesRead, bytesWrote;
+	
+	unsigned char * processedText = NULL;
+ 	
+	// Read the entire file
+	while(!feof(inputFilePtr))
+	{
+		// 1. Read one block using fread()
+		bytesRead  = fread(block, 1, blockSize, inputFilePtr);
+		
+		// If we read something, we will process it
+		if(bytesRead != 0)
+		{
+		
+			// 2. If encrypting, padd it
+			if(enc_dec == "ENC")
+			{
+				//|b|b|b| | | | | |
+				//bytesRead => 3
+				//block[bytesRead] = 'x';
+				//
+				for(int i=bytesRead; i<blockSize; i++)
+				{
+					block[i] = 'x';
+				}
+
+				processedText = cipher->encrypt((unsigned char *)block);
+					
+			}
+			else
+			{
+				processedText = cipher->decrypt((unsigned char *) block);
+			}
+			
+				
+			// 3. Encrypt/Decrypt
+
+			// 4. Write the block to the output file
+			bytesWrote = fwrite(processedText, 1, blockSize, outputFilePtr);
+			
+			// Sanity check!	
+			if(bytesWrote != blockSize)
+			{
+				perror("Unable to write bytes!\n");
+				exit(-1);
+			}
+			
+			// Free the memory	
+			delete[] processedText;
+
+		}
+	}
+
+	fclose(inputFilePtr);
+	fclose(outputFilePtr);
+	
+		
+
 	/* Set the encryption key
 	 * A valid key comprises 16 hexidecimal
 	 * characters. Below is one example.
